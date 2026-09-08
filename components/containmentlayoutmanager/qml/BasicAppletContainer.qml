@@ -9,7 +9,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Window
-import Qt5Compat.GraphicalEffects
+import QtQuick.Effects
 import QtQuick.Effects as Effects
 
 import org.kde.plasma.plasmoid
@@ -19,6 +19,8 @@ import org.kde.plasma.components as PlasmaComponents
 import org.kde.plasma.private.containmentlayoutmanager as ContainmentLayoutManager
 import org.kde.kirigami as Kirigami
 
+pragma ComponentBehavior: Bound
+
 ContainmentLayoutManager.AppletContainer {
     id: appletContainer
     editModeCondition: Plasmoid.immutable
@@ -26,9 +28,12 @@ ContainmentLayoutManager.AppletContainer {
         : ContainmentLayoutManager.ItemContainer.AfterPressAndHold
 
     Kirigami.Theme.inherit: false
-    Kirigami.Theme.colorSet: (applet.plasmoid.effectiveBackgroundHints & PlasmaCore.Types.ShadowBackground)
-        && !(applet.plasmoid.effectiveBackgroundHints & PlasmaCore.Types.StandardBackground)
-        && !(applet.plasmoid.effectiveBackgroundHints & PlasmaCore.Types.TranslucentBackground)
+    // applet.plasmoid resolves to a generic QObject in the qmltypes shipped
+    // with libplasma; its Applet members (effectiveBackgroundHints, busy,
+    // configurationRequired, internalAction) only exist at runtime.
+    Kirigami.Theme.colorSet: (applet.plasmoid.effectiveBackgroundHints & PlasmaCore.Types.ShadowBackground) // qmllint disable missing-property
+        && !(applet.plasmoid.effectiveBackgroundHints & PlasmaCore.Types.StandardBackground) // qmllint disable missing-property
+        && !(applet.plasmoid.effectiveBackgroundHints & PlasmaCore.Types.TranslucentBackground) // qmllint disable missing-property
             ? Kirigami.Theme.Complementary
             : Kirigami.Theme.Window
 
@@ -95,9 +100,9 @@ ContainmentLayoutManager.AppletContainer {
             if (!appletContainer.applet) {
                 return "";
             }
-            if (appletContainer.applet.plasmoid.effectiveBackgroundHints & PlasmaCore.Types.TranslucentBackground) {
+            if (appletContainer.applet.plasmoid.effectiveBackgroundHints & PlasmaCore.Types.TranslucentBackground) { // qmllint disable missing-property
                 return "widgets/translucentbackground";
-            } else if (appletContainer.applet.plasmoid.effectiveBackgroundHints & PlasmaCore.Types.StandardBackground) {
+            } else if (appletContainer.applet.plasmoid.effectiveBackgroundHints & PlasmaCore.Types.StandardBackground) { // qmllint disable missing-property
                 return "widgets/background";
             } else {
                 return "";
@@ -108,7 +113,7 @@ ContainmentLayoutManager.AppletContainer {
             // bind to api and hints automatically, refresh non-observable prefix manually
             blurEnabled = Qt.binding(() =>
                    GraphicsInfo.api !== GraphicsInfo.Software
-                && (appletContainer.applet.plasmoid.effectiveBackgroundHints & PlasmaCore.Types.StandardBackground)
+                && (appletContainer.applet.plasmoid.effectiveBackgroundHints & PlasmaCore.Types.StandardBackground) // qmllint disable missing-property
                 && hasElementPrefix("blurred")
             );
         }
@@ -129,7 +134,7 @@ ContainmentLayoutManager.AppletContainer {
             }
         }
 
-        DropShadow {
+        MultiEffect {
             anchors {
                 fill: parent
                 leftMargin: appletContainer.leftPadding
@@ -138,17 +143,16 @@ ContainmentLayoutManager.AppletContainer {
                 bottomMargin: appletContainer.bottomPadding
             }
             z: -1
-            horizontalOffset: 0
-            verticalOffset: 1
-
-            radius: 4
-            samples: 9
-            spread: 0.35
-
-            color: Qt.rgba(0, 0, 0, 0.5)
+            shadowEnabled: true
+            shadowHorizontalOffset: 0
+            shadowVerticalOffset: 1
+            shadowBlur: 1
+            blurMax: 4
+            shadowScale: 1
+            shadowColor: Qt.rgba(0, 0, 0, 0.5)
             opacity: 1
 
-            source: appletContainer.applet && appletContainer.applet.plasmoid.effectiveBackgroundHints & PlasmaCore.Types.ShadowBackground
+            source: appletContainer.applet && appletContainer.applet.plasmoid.effectiveBackgroundHints & PlasmaCore.Types.ShadowBackground // qmllint disable missing-property
                 ? appletContainer.applet : null
             visible: source !== null
         }
@@ -270,7 +274,7 @@ ContainmentLayoutManager.AppletContainer {
                     width: backgroundEffect.appletContainerScreenRect.width
                     height: backgroundEffect.appletContainerScreenRect.height
                     sourceRect: backgroundEffect.appletContainerScreenRect
-                    sourceItem: appletContainer.layout.containmentItem.wallpaper
+                    sourceItem: appletContainer.layout.containmentItem.wallpaper // qmllint disable missing-property
                 }
             }
         }
@@ -278,7 +282,7 @@ ContainmentLayoutManager.AppletContainer {
 
     busyIndicatorComponent: PlasmaComponents.BusyIndicator {
         anchors.centerIn: parent
-        visible: appletContainer.applet.plasmoid.busy
+        visible: appletContainer.applet.plasmoid.busy // qmllint disable missing-property
         running: visible
     }
     configurationRequiredComponent: PlasmaComponents.Button {
@@ -287,8 +291,8 @@ ContainmentLayoutManager.AppletContainer {
         text: i18nd("plasmashellprivateplugin", "Configure…")
         icon.name: "configure"
         display: configureMetrics.width + Kirigami.Units.gridUnit * 3 > appletContainer.width ? PlasmaComponents.Button.IconOnly : PlasmaComponents.Button.TextBesideIcon
-        visible: appletContainer.applet.plasmoid.configurationRequired
-        onClicked: appletContainer.applet.plasmoid.internalAction("configure").trigger();
+        visible: appletContainer.applet.plasmoid.configurationRequired // qmllint disable missing-property
+        onClicked: appletContainer.applet.plasmoid.internalAction("configure").trigger(); // qmllint disable missing-property
 
         PlasmaComponents.ToolTip.visible: (hovered || activeFocus) && configureButton.display === PlasmaComponents.Button.IconOnly
         PlasmaComponents.ToolTip.text: configureButton.text

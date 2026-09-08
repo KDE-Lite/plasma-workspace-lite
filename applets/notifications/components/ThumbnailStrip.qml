@@ -8,7 +8,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import Qt5Compat.GraphicalEffects
+import QtQuick.Effects
 
 import org.kde.plasma.components as PlasmaComponents3
 import org.kde.kirigami as Kirigami
@@ -66,10 +66,13 @@ Item {
         layer.enabled: true
         opacity: 0.25
         pixmap: thumbnailer.pixmap
-        layer.effect: FastBlur {
+        layer.effect: MultiEffect {
             source: previewBackground
             anchors.fill: previewBackground
-            radius: 30
+            blurEnabled: true
+            blur: 1
+            blurMax: 30
+            blurMultiplier: 0
         }
     }
 

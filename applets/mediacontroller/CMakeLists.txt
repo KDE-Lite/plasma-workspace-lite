@@ -12,8 +12,14 @@ plasma_add_applet(org.kde.plasma.mediacontroller
         AlbumArtStackView.qml
         CompactRepresentation.qml
         ExpandedRepresentation.qml
+        HueSaturationEffect.qml
     CPP_SOURCES
         globalconfig.cpp
     GENERATE_APPLET_CLASS
     QML_ARGS ${QML_ARGS}
+)
+
+qt_add_shaders(org.kde.plasma.mediacontroller "mediacontroller_huesaturation_shader"
+    PREFIX "/qt/qml/org/kde/plasma/mediacontroller"
+    FILES shaders/huesaturation.frag
 )

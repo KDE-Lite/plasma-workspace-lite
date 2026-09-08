@@ -10,9 +10,8 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import Qt5Compat.GraphicalEffects
+import QtQuick.Effects
 
-import org.kde.plasma.plasmoid
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.components as PlasmaComponents3
 import org.kde.plasma.extras as PlasmaExtras
@@ -239,19 +238,17 @@ PlasmaExtras.Representation {
             visible: (albumArt.animating || albumArt.hasImage) && !expandedRepresentation.softwareRendering
 
             layer.enabled: !expandedRepresentation.softwareRendering
-            layer.effect: HueSaturation {
-                cached: true
-
-                lightness: -0.5
-                saturation: 0.9
+                layer.effect: HueSaturationEffect {
+                    saturation: 0.9
+                    lightness: -0.5
 
                 layer.enabled: true
-                layer.effect: FastBlur {
-                    cached: true
-
-                    radius: 128
-
-                    transparentBorder: false
+                layer.effect: MultiEffect {
+                    blurEnabled: true
+                    blur: 1
+                    blurMax: 64
+                    blurMultiplier: 1
+                    autoPaddingEnabled: false
                 }
             }
             // use State to avoid unnecessary reevaluation of width and height
@@ -810,7 +807,12 @@ PlasmaExtras.Representation {
 
             anchors.fill: parent
             implicitHeight: contentHeight
-            currentIndex: playerSelector.count, mpris2Model.currentIndex
+            currentIndex: {
+                // read count first so this binding also re-evaluates when
+                // tab buttons are added or removed
+                const tabCount = playerSelector.count;
+                return mpris2Model.currentIndex;
+            }
             position: PlasmaComponents3.TabBar.Header
             // the currentIndex can go out of sync despite the binding if new tabbuttons are added, so we force it
             onCurrentIndexChanged: setCurrentIndex(mpris2Model.currentIndex)

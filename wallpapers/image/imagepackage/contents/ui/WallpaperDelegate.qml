@@ -7,7 +7,7 @@
 
 import QtQuick
 import QtQuick.Controls as QtControls2
-import Qt5Compat.GraphicalEffects
+import QtQuick.Effects
 
 import org.kde.kirigami as Kirigami
 import org.kde.kcmutils as KCM
@@ -68,11 +68,14 @@ KCM.GridDelegate {
             visible: previewImage.status != Image.Ready
         }
 
-        FastBlur {
+        MultiEffect {
             id: fastBlur
             visible: cfg_Blur
             anchors.fill: parent
-            radius: 4
+            blurEnabled: true
+            blur: 1
+            blurMax: 4
+            blurMultiplier: 0
             source: Image {
                 asynchronous: true
                 retainWhileLoading: true

@@ -10,7 +10,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls as QQC
 import QtQuick.Layouts
-import Qt5Compat.GraphicalEffects
+import QtQuick.Effects
 
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.plasma.extras as PlasmaExtras
@@ -111,7 +111,7 @@ PlasmaComponents.ItemDelegate {
 
         Rectangle {
             anchors.centerIn: parent
-            rotation: LayoutMirroring.enabled ? 90 : -90 // you cannot even rotate gradients without Qt5Compat.GraphicalEffects
+            rotation: LayoutMirroring.enabled ? 90 : -90
             width: parent.height
             height: parent.width
 
@@ -124,10 +124,10 @@ PlasmaComponents.ItemDelegate {
         }
     }
 
-    OpacityMask {
+    MultiEffect {
         id: labelMask
         anchors.fill: label
-        cached: true
+        maskEnabled: true
         maskSource: labelMaskSource
         visible: !!source && menuItem.ListView.isCurrentItem
 

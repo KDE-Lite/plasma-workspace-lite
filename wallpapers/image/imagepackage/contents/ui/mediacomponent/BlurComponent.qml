@@ -4,13 +4,13 @@
     SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-import Qt5Compat.GraphicalEffects
+import QtQuick
+import QtQuick.Effects
 
-/**
- * Qt5Compat.GraphicalEffects is gone in Qt6, so put it in a Loader to avoid blank wallpapers.
- * TODO Qt 6
- */
-FastBlur {
+MultiEffect {
     source: backgroundColor.blurSource
-    radius: 32
+    blurEnabled: true
+    blur: 1
+    blurMax: 32
+    blurMultiplier: 0
 }
